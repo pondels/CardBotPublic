@@ -27,7 +27,7 @@ An example of what Card-Jitsu looks like when playing looks like the following i
 ![](./markdownImages/CJsamplegame.png)
 
 You can see that you can select your choice using the buttons.
-You can see what cards and colors you have one on, as well for the opponent.
+You can see what cards and colors you have won on, as well for the opponent.
 It shows you the cards that were played for the round. (Although, no animations since these are images and not gifs)
 
 ---
