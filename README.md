@@ -18,13 +18,30 @@ The Bot can currently do the following:
 
     When a user joins your game using /join (code), every player will be notified of the player joining the server.
 
-    You can play a fully fledged out game online, cross server with friends of card-jitsu and uno.
+    You can play a fully fledged out game online, cross server with friends of card-jitsu and uno, as well as in your Direct Messages.
 
     You can open card-packs for card-jitsu just like the good 'ol days and collect all the cards. You can view your deck, and even see how many cards you've collected and how many cards you need to collect from a given series.
 ```
-[Click Here for more proper documentation](https://mathbotinc.glitch.me/)
 
-[Software Demo Video (Fairly Outdated)](https://youtu.be/YT4hVIMADyQ)
+An example of what Card-Jitsu looks like when playing looks like the following image.
+![](./markdownImages/CJsamplegame.png)
+
+You can see that you can select your choice using the buttons.
+You can see what cards and colors you have one on, as well for the opponent.
+It shows you the cards that were played for the round. (Although, no animations since these are images and not gifs)
+
+---
+
+The other game is UNO. Here's an example of the current looks of that.
+
+![](./markdownImages/UNOsamplegame.png)
+
+The gameplay is similar to card-jitsu, however, it has not gotten a visual update yet, as it runs in multiple embeds. As of now the game is unplayable due to the rewrite, but is currently being worked on to be compatible with the new version of Discord.py v2.0.
+This update will take a little bit longer than the Card-Jitsu visuals did, as this game can take anywhere from 2-8 players, which means that visuals will take longer to develop. As of now, Card-Jitsu is the only functional game being ran on the bot until further notice.
+
+[Click Here for more proper documentation (currently outdated)](https://mathbotinc.glitch.me/)
+
+[Software Demo Video (currently outdated)](https://youtu.be/YT4hVIMADyQ)
 
 # Developent Environment
 `SOFTWARE`
@@ -39,9 +56,9 @@ The Bot can currently do the following:
 - pymongo
 - datetime
 - bs4 (beautiful soup)
-- numpy
 - urllib
-- cv2
+- opencv
+- pillow
 
 # Useful Websites
 
@@ -49,11 +66,10 @@ The Bot can currently do the following:
 - [Club Penguin Power Cards](https://clubpenguin.fandom.com/wiki/List_of_Card-Jitsu_Power_Cards)
 - [Club Penguin Cards Series 1 - 4](https://clubpenguin.fandom.com/wiki/List_of_Regular_Card-Jitsu_Cards_(series_1-4))
 - [Club Penguin Cards series 5 - 8](https://clubpenguin.fandom.com/wiki/List_of_Regular_Card-Jitsu_Cards_(series_5-8))
-- [Standard Discord Library](https://discordpy.readthedocs.io/en/stable/)
-- [Discord Slash Command Library](https://pythonrepo.com/repo/eunwoo1104-discord-py-slash-command)
+- [Standard Discord API Library](https://discordpy.readthedocs.io/en/stable/)
 
 # Future Work
 
-- More card games to be made. i.e. solitaire, gofish, etc.
+- Update Visuals for Uno just like card-jitsu
+- More card games to be made. i.e. solitaire, gofish, blackjack, etc.
 - Leveling up system to increase daily, weekly and monthly rewards.
-- Rework into JavaScript to play in your DM's so I can eliminate making a million channels in a server.
