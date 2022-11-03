@@ -1,0 +1,12 @@
+start with 2 cards.
+blackjack at 21 and 2 cards
+you can't only see 2 of the dealers cards until it's the dealer's turn
+you and hit whenever you want until you want to stop or you bust
+dealer hits until they are >= 17 total
+if player ties with dealer, money blackjack
+if player is greater hand or dealer busts, player doubles their pot
+if player is less than dealer hand, they lose their bid
+if player gets blackjack, game ends and they get 4 times the pot
+if player has 2 cards of the same value, they can split their hand into 2 hands, but they have to double their bid, so they need enough $$$
+player can ask for insurance against the dealer if they show a value of 10
+player can double down and get one final card face down until the dealer finishes their deal. The cards are then compared.

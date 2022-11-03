@@ -1,0 +1,946 @@
+
+# # DatabaseQuery Archived Functions
+
+# def autoTurn(self):
+#     gameDB = self.cluster['servers']
+#     for collection in gameDB.list_collection_names():
+#         gamesCollections = gameDB[collection]
+#         game = gamesCollections.find()
+#         for player in game:
+#             if player['timeForTurn'] != 0:
+#                 time = str(datetime.now() - player['timeForTurn'])
+#                 time = time.split(':')
+#                 seconds = int(round(float(time[2]), 0))
+#                 if seconds >= 20:
+#                     gamesCollections.update_one({"_id": player['_id']}, {"$set": {'timeForTurn': datetime.now()}})
+#                     hands, makeMove, channels, battle = self.forceTurn(player['_id'], random.randrange(1, 6), gamesCollections)
+#                     return hands, makeMove, channels, battle
+#     return None, None, None, None
+#     '''NOTE /card-jitsu choose should set the timer to 0  and when player 2 either makes their move or 
+#         when the auto turn enables, it sets both player's timers back to 0'''
+
+# def deleteGame(self):
+#     # Ran Every minute once the server is initiated
+#     # If no one joined the game to free up space in the database
+#     # This will allow for less clutter and having a user only in one game
+#     # Kind of...
+
+#     # Checks if it's been a minute with an empty lobby
+#     channel = 0
+#     gameDB = self.cluster['servers']
+#     for collection in gameDB.list_collection_names():
+#         gamesCollections = gameDB[collection]
+#         games = gamesCollections.find()
+#         totalPlayers = 0
+#         for player in games:
+#             totalPlayers += 1
+#         if totalPlayers < 2 and collection[:3] == 'CPJ':
+#             # Game made 2 minutes in the future to compare times.
+#             # Once it is in the past, that means it's gone for 2 minutes
+#             # And can therefore be removed
+#             time = str(player['timeCreated'] - datetime.now())
+#             override = time.split(" ")
+#             channel = player['channel_id']
+#             # override = [days, time]
+#             if override[0] == '-1':
+#                 gameDB.drop_collection(collection)
+#                 return True, channel
+#     return False, channel
+
+# def forceTurn(self, username, cardNumber, gamesCollections):
+#     '''
+#         Triggered when a player chooses a card, they trigger
+#         the takeTurn function and it plays their card they chose
+#         and then proceeds to draw a new card to their hand.
+    
+#         returns new hand = 5 Cards in their hand
+#                 makeMove = String
+#                 channels = player channels
+#                 battle = 2 cards that were chosen
+#     '''
+#     playerFound = False
+#     channels = [] # Will not have the opponents channel if they haven't taken their turn yet
+#     hands = []
+#     battle = []
+#     opponentTurn = -1 # Checks if the opponent has taken their turn
+#     # ^ If true, return the 2 cards used and prompts both users to make their next move, If False, return "waiting on opponent to make move"
+
+#     allGames = gamesCollections.find()
+#     for player in allGames:
+#         if player["_id"] == username: # User found
+#             playerFound = True
+#             channels.append(player['channel_id'])
+#             if player['2players']: # Both players are in the game
+#                 hand = player['current_hand']
+#                 card = hand[cardNumber - 1] # Card chosen
+#                 gamesCollections.update_one({"_id": username}, {"$set": {'card_information': card}}) # Updates this to the card they chose
+#                 battle.append(card)
+
+#                 # Grabbing user's deck
+#                 deckDB = self.cluster['player-info']
+#                 deckCollections = deckDB['users']
+#                 decks = deckCollections.find()
+
+#                 for deck in decks:
+#                     if deck['_id'] == username:
+#                         new_card = random.choice(deck['deck']) # Chooses a random card from their deck
+#                         hand.pop(cardNumber - 1) # Removes the card they chose from their hand
+#                         hand.insert(cardNumber - 1, new_card) # Replaces the card with the new card
+#                         gamesCollections.update_one({"_id": username}, {"$set": {'current_hand': hand}})
+#                         gamesCollections.update_one({"_id": username}, {"$set": {'turn_taken': True}})
+#                         hand = self.grabHand(username)
+#                         hands.append(hand)
+#         else:
+#             # this else runs if it's the opponent
+#             opponentTurn = player['turn_taken']
+#             if opponentTurn:
+#                 channels.append(player['channel_id'])
+#                 hand = self.grabHand(player['_id'])
+#                 hands.append(hand)
+#                 battle.append(player['card_information'])
+#     if playerFound:
+#         if opponentTurn: makeMove = 'Make your next move!' # This sends to both users
+#         else: makeMove = 'Waiting on opponent to make move!' # This sends to the player who took the turn
+#         return hands, makeMove, channels, battle
+
+# def grabHand(self, username):
+#         '''
+#             Sends the hand of a player to a given channel
+#         '''
+#         hand = ''
+#         serverDB = self.cluster['servers']
+#         for collection in serverDB.list_collection_names():
+#             gamesCollections = serverDB[collection]
+#             allGames = gamesCollections.find()
+#             for player in allGames:
+#                 if player["_id"] == username:
+#                     for card in player['current_hand']:
+#                         hand += card['card_image']
+#         return hand
+
+# def players_channels(self, players):
+#         # returns a list of players channels
+#         channels = []
+#         for player in players:
+#             channels.append(player['channel_id'])
+#         return channels
+
+# def whoJoined(self, username):
+#         '''
+#             Sends player 1 a message that player 2 joined the game!
+            
+#             returns: Player 1's text channel
+#         '''
+#         serverDB = self.cluster['servers']
+#         for collection in serverDB.list_collection_names():
+#             gamesCollections = serverDB[collection]
+#             allGames = gamesCollections.find()
+#             channel = 0
+#             for player in allGames:
+#                 if player["_id"] == username:
+#                     return channel
+#                 channel = player['channel_id']
+
+# def get_channel_id(self, username):
+#         _, player, _ = self.player_lookup(username)
+#         return player['channel_id']
+
+#
+#
+#
+#
+#
+#
+#
+#
+#
+
+from dotenv.main import load_dotenv
+import discord
+from discord.ext import commands
+from discord_slash import SlashCommand, SlashContext
+import os
+from cardgames.database import DatabaseQuery
+from cardgames.cardjitsu import CardJitsu
+from cardgames.uno import Uno
+from cardgames.gofish import GoFish
+from cardgames.blackjack import BlackJack
+from cardgames.solitaire import Solitaire
+# from discord import FFmpegPCMAudio
+# import random
+# import asyncio
+
+load_dotenv()
+
+userCtx = ''
+database = os.getenv('MONGO_TOKEN')
+
+# Initializing Games
+CPCardJitsu = CardJitsu(database)
+uno = Uno(database)
+blackjackHandler = BlackJack(database)
+gofishHandler = GoFish(database)
+solitaireHandler = Solitaire(database)
+databasequery = DatabaseQuery(database)
+
+TOKEN = os.getenv('TOKEN')
+
+intents = discord.Intents.all()
+client = commands.Bot(command_prefix='~', intents=intents)
+slash = SlashCommand(client, sync_commands=True)
+
+# @client.event
+# async def on_ready():
+#     print("CARD BOT IS ONLINE")
+
+# @slash.slash(name='help', description='A command for help on other commands!')
+# async def _help(ctx:SlashContext):
+    # channel = await ctx.author.create_dm()
+    # embed=discord.Embed(title="Card-Jitsu Help", url='https://clubpenguin.fandom.com/wiki/Card-Jitsu', description="Click [Here](https://mathbotinc.glitch.me/) for a guide to the bot!", color=0xFF5733)
+    # await channel.send(embed=embed)
+    # await ctx.send(f'Help Instructions Have Been Messaged To You Directly, {ctx.author.name}!')
+
+# @slash.slash(name="balance", description="A Command to View Your Balance!")
+# async def _balance(ctx:SlashContext):
+#     balance = databasequery.balanceChecker(ctx.author.name)
+#     await ctx.send(f"You Currently Have ${balance}.00")
+
+# @slash.slash(name="daily", description="A Command to View Your Balance!")
+# async def _daily(ctx: SlashContext):
+    # daily_claim = databasequery.dailyClaim(ctx.author.name)
+    # await ctx.send(daily_claim)
+
+# @slash.slash(name="weekly", description="A Command to View Your Balance!")
+# async def _weekly(ctx: SlashContext):
+#     weekly_claim = databasequery.weeklyClaim(ctx.author.name)
+#     await ctx.send(weekly_claim)
+
+# @slash.slash(name="monthly", description="A Command to View Your Balance!")
+# async def _monthly(ctx: SlashContext):
+#     monthly_claim = databasequery.monthlyClaim(ctx.author.name)
+#     await ctx.send(monthly_claim)
+
+# @slash.slash(name='setup', description='Sets the player up in the database.')
+# async def _setup(ctx:SlashContext):
+#     '''
+#         Checks if the player is in
+#         the database, if not, sets them up with 
+#         literally everything.
+
+#         Otherwise, cancels the command.
+#     '''
+#     response = databasequery.setup(ctx.author.name)
+#     member = ctx.author
+#     role = discord.utils.get(ctx.guild.roles, name = "Member")
+#     await member.add_roles(role)
+#     await ctx.send(response)
+
+# @slash.slash(name="card-jitsu", description="Please Type '/info card-jitsu' for information on this game!")
+# async def _cardJitsu(ctx:SlashContext, type, number=None):
+
+#     # Add a waiting message for players when something goes through
+
+#     # Reenable if i somehow fix the infinite defer problem
+#     await ctx.defer()
+    
+#     username = ctx.author.name
+#     type = str(type).lower()
+
+#     send_message = False
+
+#     # Opens a pack of cards and returns what they opened
+#     if type == 'open':
+#         if number != None:
+#             cardsUnpacked = CPCardJitsu.openPack(username, int(number))
+#         else: cardsUnpacked = "Please Select a Pack Number!"
+#         await ctx.send(cardsUnpacked)
+
+#     # Shows the user their collection of cards
+#     elif type == 'deck':
+
+#         # TODO
+#         # Change to personal site to check their deck
+        
+        
+#         cardsUnpacked = CPCardJitsu.getDeck(username)
+#         allCards = ''
+#         # Checks if they even have a deck
+#         if cardsUnpacked != "Nothing Found!":
+#             # Formats the print nicely
+#             for i in range(len(cardsUnpacked)):
+#                 if len(allCards) + len(cardsUnpacked[i]['card_image']) >= 2000:
+#                     await ctx.send(allCards)
+#                     allCards = ''
+#                 allCards += cardsUnpacked[i]['card_image']
+#             if allCards != '': await ctx.send(allCards)
+#         else: await ctx.send('Nothing Found!')
+#     # Creates a joinable server
+#     elif type == 'create':
+#         channel_id = ctx.channel_id
+#         started = CPCardJitsu.createGame(ctx, username, channel_id)
+#         await ctx.send(started)
+
+#     elif type == 'start':
+        
+#         players, player, gameCollection = databasequery.player_lookup(username)
+        
+#         if player != None:
+
+#             send_message = True
+
+#             if player['party_leader']:
+#                 if len(players) > 1:
+                    
+#                     for player in players:
+#                         CPCardJitsu.dealHands(player, gameCollection)
+#                         hand = CPCardJitsu.showHand(player['_id'])
+#                         channel = client.get_channel(player['channel_id'])
+
+#                         embed = discord.Embed(title='^ YOUR HAND ^', color=0x00ff00)
+#                         message = await channel.send(embed=embed, content=hand)
+#                         hand_id = message.id
+
+#                         embed = discord.Embed(title='^ VS ^', color=0x00ff00)
+#                         message = await channel.send(embed=embed)
+#                         vs_id = message.id
+
+#                         message = await channel.send(content='Please pick a card!')
+#                         message_id = message.id
+
+#                         gameCollection.update_one({'_id': player['_id']}, {'$set': {'hand_id': hand_id}})
+#                         gameCollection.update_one({'_id': player['_id']}, {'$set': {'vs_id': vs_id}})
+#                         gameCollection.update_one({'_id': player['_id']}, {'$set': {'message_id': message_id}})
+#                 else:
+#                     await ctx.send("There are not enough players to play!")
+#             else:
+#                 await ctx.send("You're not the party leader!")
+#         else:
+#             await ctx.send('You\'re not in a game!')
+
+#     elif type == 'choose':
+
+#         # Might be able to choose multiple cards at once? // FIX
+#         _, player, gameCollection = databasequery.player_lookup(username)
+
+#         if player != None:
+
+#             # Players hand is empty, game hasn't started
+#             if player['hand'] != []:
+
+#                 number = int(number)
+
+#                 channel = client.get_channel(player['channel_id'])
+#                 if number >= 1 and number <= 5:
+#                     players = CPCardJitsu.takeTurn(username, number)
+
+#                     # Gets current data for player
+#                     for player in players:
+#                         if player['_id'] == username:
+#                             break
+
+#                     if player['turn_taken']:
+
+#                         # Updates Hand
+#                         hand_id = await channel.fetch_message(player['hand_id'])
+#                         hand = CPCardJitsu.showHand(player['_id'])
+#                         embed = discord.Embed(title='^ YOUR HAND ^', color=0x00ff00)
+#                         await hand_id.edit(embed=embed, content=hand)
+                        
+#                         turns_taken = 0
+#                         vs_cards = ''
+#                         for player in players:
+#                             # Once pile updates, their turn_taken is now false
+#                             #   And they choose new cards
+#                             channel = client.get_channel(player['channel_id'])
+
+#                             if player['turn_taken']:
+#                                 vs_cards += player['card_information']['card_image']
+#                                 turns_taken += 1
+
+#                             # Updates pile once both players have taken their turn
+#                             if turns_taken == 2:
+
+#                                 # Find the round winner and loser
+#                                 winner, loser = CPCardJitsu.winningCard(username)
+
+#                                 # Finds if someone win the game as a whole
+#                                 winner_found = CPCardJitsu.overall_winner(username)
+
+#                                 for player in players:
+
+#                                     # Updates the VS Pile
+#                                     channel = client.get_channel(player['channel_id'])
+#                                     vs_id = await channel.fetch_message(player['vs_id'])
+#                                     embed = discord.Embed(title='^ VS ^', color=0x00ff00)
+#                                     await vs_id.edit(embed=embed, content=vs_cards)
+
+#                                     # Overall winner found, game ends
+#                                     if winner_found:
+#                                         CPCardJitsu.pay_players(winner, loser)
+#                                         _ = databasequery.abandonMatch(username, force=True)
+#                                         msg_id = await channel.fetch_message(player['message_id'])
+#                                         await msg_id.edit(content=f'GAME FINISHED. {winner} won!')
+
+#                                     # Just a round winner was declared
+#                                     else:
+#                                         msg_id = await channel.fetch_message(player['message_id'])
+#                                         if winner == loser:
+#                                             await msg_id.edit(content=f'Round tied! Choose your next card, {player["_id"]}')
+#                                         else:
+#                                             await msg_id.edit(content=f'{winner} won that round! Choose your next card, {player["_id"]}')
+#                         # Fixes infinite await bug for now
+#                         send_message = True
+#                     else:
+#                         msg_channel = await channel.fetch_message(player['message_id'])
+#                         await msg_channel.edit(content="You have already taken your turn. Please wait for your opponent to choose a card!")
+#                 else:
+#                     msg_channel = await channel.fetch_message(player['message_id'])
+#                     await msg_channel.edit(content="Please choose a number 1 - 5")
+#             else:
+#                 await ctx.send('The game has not started yet!')
+#         else:
+#             await ctx.send('You are not in a game!')
+
+#     elif type == 'collect':
+#         cardsToCollect = databasequery.collect(username, number, 'collect')
+#         await ctx.send(cardsToCollect)
+
+#     elif type == 'collected':
+#         cardsCollected = databasequery.collect(username, number, 'collected')
+#         await ctx.send(cardsCollected)
+    
+#     else:
+#         await ctx.send("Failed To Execute Command!")
+
+#     if send_message:
+#         message = await ctx.send('Boo')
+#         await message.delete()
+
+# @slash.slash(name="blackjack", description="")
+# async def _blackjack(ctx:SlashContext, hit=None, turndone=None, split=None, double=None, insurance=None):
+
+#     await ctx.send('sup')
+#     # options_selected = 0
+#     # if hit != None: options_selected += 1
+#     # if turndone != None: options_selected += 1
+#     # if split != None: options_selected += 1
+#     # if double != None: options_selected += 1
+#     # if insurance != None: options_selected += 1
+    
+#     # if options_selected == 0:
+#     #     await ctx.send('Please select an option!')
+#     #     return
+
+#     # if options_selected > 1:
+#     #     await ctx.send('Please only select one option!')
+#     #     return
+
+    
+
+#     # await ctx.send(emded=embed, components=[Button(label='Test', custom_id="test-id", style=ButtonStyle.red)])
+
+#     # showHand
+#     # hit
+#     # findTotal
+#     # turnDone
+#     # checkBust
+#     # newHand
+#     # splitHand
+#     # doubleDown
+#     # checkBlackjack
+#     # checkWin
+#     # changeFunds
+#     # insurance
+
+# @slash.slash(name="gofish", description="Play a game of Go-Fish with your friends! (CURRENTLY A WIP)")
+# async def _goFish(ctx:SlashContext, type):
+#     await ctx.send(type)
+
+# @slash.slash(name="solitaire", description="Play a game of solitaire (CURRENTLY A WIP)")
+# async def _solitaire(ctx:SlashContext, ):
+#     await ctx.send('WIP')
+
+# @slash.slash(name='uno', description='Play uno with your friends using this command!')
+# async def _uno(ctx:SlashContext, type, card=None, color=None, call_uno=None):
+
+#     # await ctx.defer()
+
+#     if call_uno != None: call_uno = True
+#     if color != None: color = str(color).lower()
+#     type = str(type).lower()
+#     channel_id = ctx.channel_id
+#     username = ctx.author.name
+    
+#     send_message = False
+
+#     if type == "create":
+#         started = databasequery.startGame(ctx, username, channel_id, "UNO", 8)
+#         await ctx.send(started)
+    
+#     elif type == 'start':
+
+#         _, inGame, _ = databasequery.player_lookup(username)
+        
+#         if inGame != None:
+#             canStart = uno.can_start(username)
+
+#             if canStart:
+#                 message, pile = uno.setup(username)
+
+#                 if pile == None: await ctx.send(message)
+#                 else:
+
+#                     # Send all the players in their respective channels their hands.
+#                     players, _, gameCollection = databasequery.player_lookup(username)
+#                     channelCards = uno.show_starting_hands(username)
+#                     count = 0
+
+#                     for user in channelCards:
+#                         userChannel = user[0]
+
+#                         channel = client.get_channel(userChannel)
+#                         embed = discord.Embed(title='^ YOUR HAND ^', color=0x00ff00)
+#                         handMessage = await channel.send(embed=embed, content=user[1])
+
+#                         # Gets messageID for editing. Clean Gameplay
+#                         hand_id = handMessage.id
+
+#                         embed = discord.Embed(title='^ PILE ^', color=0x00ff00)
+#                         pileMessage = await channel.send(embed=embed, content=pile['image'])
+
+#                         pile_id = pileMessage.id
+
+#                         gameCollection.update_one({'_id': players[count]['_id']}, {'$set': {'hand_id': hand_id}})
+#                         gameCollection.update_one({'_id': players[count]['_id']}, {'$set': {'pile_id': pile_id}})
+
+#                         if count != 0:
+#                             message = await channel.send(f'The Game has Begun! It\'s now {players[0]["_id"]}\'s turn!')
+#                             message_id = message.id
+#                             gameCollection.update_one({'_id': players[count]['_id']}, {'$set': {'message_id': message_id}})
+                        
+#                         count += 1
+
+#                     channel = client.get_channel(channelCards[0][0])
+#                     message = await channel.send(content=f'It\'s your turn!')
+#                     message_id = message.id
+#                     gameCollection.update_one({'_id': username}, {'$set': {'message_id': message_id}})
+
+#                     await ctx.send("Game Started!")
+
+#             else: await ctx.send("The game has already begun!")
+#         else: await ctx.send("You are not in a game!")
+
+#     elif type == 'choose':
+
+#         # player is in server
+#         _, inGame, _ = databasequery.player_lookup(username)
+
+#         if inGame != None:
+
+#             # Hand is empty so game hasn't started yet
+#             if inGame['hand'] != []:
+
+#                 send_message = True
+
+#                 # Is it the user's turn?
+#                 isTurn, channel_id = uno.is_turn(username)
+#                 channel = client.get_channel(channel_id)
+#                 if isTurn:
+
+#                     # Card can be placed on the pile?
+#                     if card == None: await ctx.send('PLEASE SELECT A CARD')
+#                     else:
+#                         validCard, card, players = uno.check_valid_card(username, int(card), color)
+#                         if validCard:
+
+#                             # Executes if a player hasn't won
+#                             hasWon = uno.check_win(username)
+
+#                             if not hasWon:
+
+#                                 # Player's card was valid and placed
+#                                 colorChange = False
+#                                 loop = 0
+#                                 _, cards = uno.showHand(username)
+#                                 embed = discord.Embed(title='^ YOUR HAND ^', color=0x00ff00)
+                    
+#                                 hand = ''
+#                                 for image in cards:
+#                                     hand += image['image'] + ''
+
+#                                 _, player, _ = databasequery.player_lookup(ctx.author.name)
+#                                 message = await channel.fetch_message(player['hand_id'])
+#                                 await message.edit(embed=embed, content=hand)
+
+#                                 # Add a state if and when new cards are added
+#                                 if card['type'] == 'plustwo': loop = 2
+#                                 elif card['type'] == 'plusfour':
+#                                     colorChange = True
+#                                     loop = 4
+#                                 elif card['type'] == 'wild': colorChange = True
+#                                 elif card['type'] == 'reverse': uno.reverse(username)
+
+#                                 # Turn is passed over
+#                                 next_player_channel, next_player_name = uno.pass_turn(username)
+#                                 channel = client.get_channel(next_player_channel)
+
+#                                 # Runs if the player needs to draw cards and skips them
+#                                 cards_drawn = ''
+#                                 count = 0
+#                                 for i in range(loop):
+#                                     message, _ = uno.draw_card(next_player_name)
+#                                     cards_drawn += message + ' '
+#                                     count += 1
+
+#                                     if i == loop-1:
+
+#                                         _, cards = uno.showHand(next_player_name)
+
+#                                         embed = discord.Embed(title='^ YOUR HAND ^', color=0x00ff00)
+                    
+#                                         hand = ''
+#                                         for image in cards:
+#                                             hand += image['image'] + ''
+
+#                                         _, player, _ = databasequery.player_lookup(next_player_name)
+#                                         message = await channel.fetch_message(player['hand_id'])
+#                                         await message.edit(embed=embed, content=hand)
+
+#                                         next_player_channel, next_player_name = uno.pass_turn(next_player_name)
+                                
+#                                 # Runs if the player was skipped
+#                                 if card['type'] == 'skip':
+#                                     next_player_channel, next_player_name = uno.pass_turn(next_player_name)
+                                
+#                                 players, person, gameCollection = databasequery.player_lookup(username)
+
+#                                 # Returns to all players the new pile
+#                                 for player in players:
+#                                     embed = discord.Embed(title='^ PILE ^', color=0x00ff00)
+                                    
+#                                     channel = client.get_channel(player['channel_id'])
+#                                     message = await channel.fetch_message(player['pile_id'])
+#                                     await message.edit(embed=embed, content=card['image'])
+
+#                                     if colorChange: added_color = f'\nThe pile color is now: {card["color"]}!'
+#                                     else: added_color = ''
+                                    
+#                                     if colorChange and player['_id'] != username and player['_id'] != next_player_name:
+#                                         msg_id = databasequery.get_msg_id(player['_id'])
+#                                         msg = await channel.fetch_message(msg_id)
+#                                         await msg.edit(content=f'The pile color is now: {card["color"]}!')
+
+#                                 # Checks if an uno happened and sends everybody
+#                                 # Except that player that they got an uno if not called correctly
+#                                 isUno = uno.check_uno(username)
+#                                 if isUno and not call_uno: uno_message = f'\nPsst! Looks like {username} forgot to call uno. Try to call uno before they notice!'
+#                                 else:
+#                                     # Uno was called but they have more than 1 card in their hand
+#                                     if call_uno and not isUno:
+#                                         hand = ''
+
+#                                         for card in person['hand']:
+#                                             hand += card['image']
+
+#                                         for _ in range(2):
+#                                             card, _ = uno.draw_card(username)
+#                                             hand += card # already an image
+
+#                                         embed = discord.Embed(title='^ YOUR HAND ^', color=0x00ff00)
+#                                         message = await channel.fetch_message(person['hand_id'])
+#                                         await message.edit(embed=embed, content=hand)
+
+#                                     uno_message = ''
+
+#                                 msg_id = databasequery.get_msg_id(next_player_name)
+#                                 channel = client.get_channel(next_player_channel)
+#                                 msg = await channel.fetch_message(msg_id)
+#                                 await msg.edit(content=f'{next_player_name}, It\'s your turn!{added_color}{uno_message}')
+
+#                                 for player in players:
+#                                     msg_id = databasequery.get_msg_id(player['_id'])
+#                                     channel = client.get_channel(player['channel_id'])
+#                                     msg = await channel.fetch_message(msg_id)
+
+#                                     message = f'It is now {next_player_name}\'s turn!{added_color}'
+
+
+#                                     if player['_id'] != username and player['channel_id'] != next_player_channel:
+#                                         await msg.edit(content=message + uno_message)
+
+#                                     elif player['_id'] == username:
+#                                         await msg.edit(content=message)
+#                             else:
+#                                 # Player won the game, game is over.
+#                                 players, player, _ = databasequery.player_lookup(username)
+
+#                                 for person in players:
+                                    
+#                                     channel = client.get_channel(person['channel_id'])
+
+#                                     embed = discord.Embed(title='^ PILE ^', color=0x00ff00)
+#                                     message = await channel.fetch_message(person['pile_id'])
+#                                     await message.edit(embed=embed, content=card['image'])
+
+#                                     if person['channel_id'] != player['channel_id']:
+#                                         msg_id = databasequery.get_msg_id(person['_id'])
+#                                         msg = await channel.fetch_message(msg_id)
+#                                         await msg.edit(content=f'GAME OVER: {username} wins!')
+                                
+#                                 msg_id = databasequery.get_msg_id(username)
+#                                 channel = client.get_channel(player['channel_id'])
+#                                 msg = await channel.fetch_message(msg_id)
+#                                 await msg.edit(content='GAME OVER: You win!')
+
+#                                 embed = discord.Embed(title='^ HAND ^', color=0x00ff00)
+#                                 message = await channel.fetch_message(player['hand_id'])
+#                                 await message.edit(embed=embed, content=player['hand'])
+
+#                                 databasequery.abandonMatch(username, force=True)
+
+#                         else:
+#                             msg_id = databasequery.get_msg_id(username)
+#                             msg = await channel.fetch_message(msg_id)
+#                             await msg.edit(content='That card and/or color is invalid!')
+#                 else:
+#                     msg_id = databasequery.get_msg_id(username)
+#                     channel = client.get_channel(channel_id)
+#                     msg = await channel.fetch_message(msg_id)
+#                     await msg.edit(content="It's not your turn!")
+#             else:
+#                 await ctx.send("The game hasn't started yet!")
+#         else:
+#             await ctx.send('You\'re not in a game!')
+
+#     elif type == 'draw':
+
+#         # Can only draw when its your turn | FIX
+#         players, player, _ = databasequery.player_lookup(username)
+
+#         if player != None:
+#             send_message = True
+
+#             if player['hand'] != []:
+#                 if player['is_turn']:
+#                     message, user_channel = uno.draw_card(username)
+
+#                     if user_channel != None:
+
+#                         channel, cards = uno.showHand(username)
+
+#                         embed = discord.Embed(title='^ YOUR HAND ^', color=0x00ff00)
+                        
+#                         hand = ''
+#                         for card in cards:
+#                             hand += card['image'] + ''
+
+#                         channel = client.get_channel(channel)
+#                         msg_id = await channel.fetch_message(player['hand_id'])
+#                         await msg_id.edit(embed=embed, content=hand)
+
+#                         next_player_channel, next_player_name = uno.pass_turn(username)
+#                         channel = client.get_channel(next_player_channel)
+
+#                         next_player_msg_id = databasequery.get_msg_id(next_player_name)
+#                         msg = await channel.fetch_message(next_player_msg_id)
+#                         await msg.edit(content=f'{username} drew a card. It\'s now your turn, {next_player_name}!')
+
+#                         msg_id = databasequery.get_msg_id(username)
+#                         channel = client.get_channel(user_channel)
+#                         msg = await channel.fetch_message(msg_id)
+#                         await msg.edit(content=f"You drew a card! It's now {next_player_name}'s turn!")
+
+#                         for player in players:
+#                             if player['_id'] != username and player['_id'] != next_player_name:
+#                                 msg_id = databasequery.get_msg_id(player['_id'])
+#                                 channel = client.get_channel(player['channel_id'])
+#                                 msg = await channel.fetch_message(msg_id)
+#                                 await msg.edit(content=f'{username} drew a card. It\'s now {next_player_name}\'s turn!')
+#                     else:
+#                         msg_id = databasequery.get_msg_id(username)
+#                         msg = await user_channel.fetch_message(msg_id)
+#                         await msg.edit(content=message)
+#                 else:
+#                     msg_id = databasequery.get_msg_id(username)
+#                     channel = client.get_channel(player['channel_id'])
+#                     msg = await channel.fetch_message(player['message_id'])
+#                     await msg.edit(content='It\'s not your turn yet!')
+#             else:
+#                 await ctx.send('The game has not yet begun!')
+#         else:
+#             await ctx.send('You are not in a game!')
+
+#     elif type == 'callout':
+
+#         _, inGame, _ = databasequery.player_lookup(username)
+        
+#         if inGame != None:
+
+#             # Players hand is empty, so game hasn't started
+#             if inGame['hand'] != []:
+
+#                 send_message = True
+
+#                 cards, unoUsersChannel = uno.callout(username)
+
+#                 if unoUsersChannel != None:
+                    
+#                     players, _, _ = databasequery.player_lookup(username)
+
+#                     users_turn = ''
+
+#                     for player in players:
+#                         if player['channel_id'] == unoUsersChannel:
+#                             playerHasUno = player['_id']
+#                             player_to_draw = player
+
+#                         if player['is_turn']:
+#                             users_turn = player['_id']
+
+#                     for person in players:
+#                         if person['channel_id'] != player['channel_id']:
+#                             channel = client.get_channel(person['channel_id'])
+#                             message = await channel.fetch_message(person['message_id'])
+                            
+#                             await message.edit(content = f'{username} called uno, {playerHasUno} draws 2 cards!\nIt is still {users_turn}\'s turn!')
+
+#                     embed = discord.Embed(title='^ YOUR HAND ^', color=0x00ff00)
+#                     channel = client.get_channel(player_to_draw['channel_id'])
+#                     hand = ''
+#                     for card in player_to_draw['hand']:
+#                         hand += card['image'] + ''
+
+#                     message = await channel.fetch_message(player_to_draw['hand_id'])
+#                     await message.edit(embed=embed, content=hand)
+#                 else:
+#                     _, player, _ = databasequery.player_lookup(username)
+#                     channel = client.get_channel(player['channel_id'])
+#                     message = await channel.fetch_message(player['message_id'])
+#                     await message.edit(content=cards)
+#             else:
+#                 await ctx.send('The game hasn\'t started yet!')
+#         else:
+#             await ctx.send('You\'re not in a game!')
+    
+#     else:
+#         await ctx.send("Please give a valid response!")
+
+#     if send_message:
+#         message = await ctx.send('Boo')
+#         await message.delete()
+
+# @slash.slash(name="join", description='Join servers using this command!')
+# async def _join(ctx:SlashContext, key):
+#     await ctx.defer()
+
+#     channel_id = ctx.channel_id
+#     username = ctx.author.name
+
+#     valid_server = databasequery.valid_server(key)
+
+#     if valid_server:
+
+#         # Checks to see if the game has already begun
+#         game_started = databasequery.game_started(key)
+
+#         if not game_started:
+#             joined = databasequery.joinGame(ctx, username, key, channel_id)
+
+#             if joined == 'Successfully Connected To Server!':
+#                 players, _, _ = databasequery.player_lookup(username)
+
+#                 for player in players:
+#                     if player['_id'] != username:
+#                         channel = client.get_channel(player['channel_id'])
+#                         await channel.send(f'{username} has joined the game!')
+
+#             await ctx.send(joined)
+#         else:
+#             await ctx.send("This game has already started!")
+#     else:
+#         await ctx.send('That server doesn\'t exist! Please check the key and try again!')
+
+# @slash.slash(name="games", description='View servers to join using this command!')
+# async def _games(ctx:SlashContext):
+#     games = databasequery.showGames()
+
+#     allContent = ''
+#     for game in range(len(games)):
+#         key = list(games[game].keys())
+#         values = list(games[game].values())[0]
+#         allContent += key[0] + ': '
+
+#         for value in range(len(values)):
+#             if value == len(values) - 1: allContent += values[value]
+#             else: allContent += values[value] + ', '
+
+#         allContent += '\n'
+
+#     embed = discord.Embed(title='ACTIVE GAMES', description = allContent, color=0x00ff00)
+
+#     await ctx.send(embed=embed)
+
+# @slash.slash(name="abandon", description='Abandons the game you\'re in.')
+# async def _abandon(ctx:SlashContext):
+
+#     username = ctx.author.name
+
+#     players, player, _ = databasequery.player_lookup(username)
+
+#     if player != None:
+
+#         for person in players:
+#             if person['channel_id'] != player['channel_id']:
+#                 channel = client.get_channel(person['channel_id'])
+#                 await channel.send(f'{username} has left the game!')
+
+#         if player['party_leader']:
+#             for person in players:
+#                 if person['channel_id'] != player['channel_id']:
+#                     channel = client.get_channel(person['channel_id'])
+#                     await channel.send('The game has been disbanded by the party leader!')
+
+#         abandonMessage = databasequery.abandonMatch(username)
+#         await ctx.send(abandonMessage)
+
+#     else:
+#         await ctx.send('You\'re not in a game to abandon!')
+
+# @slash.slash(name='lobby', description='A way of checking all of the players in your lobby!')
+# async def _lobby(ctx:SlashContext):
+#     username = ctx.author.name
+
+#     players, _, gameCollection = databasequery.player_lookup(username)
+
+#     list_of_players = ''
+
+#     if players != None:
+#         for player in range(len(players)):
+#             if player != len(players) - 1: list_of_players += players[player]['_id'] + '\n'
+#             else: list_of_players += players[player]['_id']
+
+#         embed = discord.Embed(title=f'Lobby: {gameCollection.name}', description=list_of_players, color=0x00ff00)
+#         await ctx.send(embed=embed)
+#     else:
+#         await ctx.send("You're not in a game!")
+
+# @slash.slash(name="report", description="This is a function to report bugs or suggest features or implementations for the bot!", default_permission=False)
+# async def _report(ctx:SlashContext, message):
+#     databasequery.send_report(message, ctx.author.name)
+#     await ctx.send('Report Submitted!')
+
+# @slash.slash(name="suggestion", description="This is a function to report bugs or suggest features or implementations for the bot!", default_permission=False)
+# async def _suggestion(ctx:SlashContext, message):
+#     databasequery.send_suggestion(message, ctx.author.name)
+#     await ctx.send('Suggestion Received!')
+
+# @slash.slash(name="test", description="This is a test function for DM's!")
+# async def _test(ctx: SlashContext):
+#     await ctx.send("No")
+
+# async def check_user():
+#     # Autonomous running function
+#     pass
+
+# client.loop.create_task(check_user())
+# client.run(TOKEN)
