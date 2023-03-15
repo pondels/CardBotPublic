@@ -14,7 +14,6 @@ class DatabaseQuery():
             self.letters = [chr(s) for s in range(65, 91)] + [chr(i) for i in range(97, 123)]
             self.numbers = [i for i in range(10)]
         except ServerSelectionTimeoutError:pass
-            
 
     def abandonMatch(self, username, force=None):
         '''

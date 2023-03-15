@@ -5,7 +5,7 @@ import os
 from datetime import datetime
 from cardgames.database import DatabaseQuery
 from cardgames.cardjitsu import CardJitsu
-from cardgames.uno import Uno
+from cardgames.uno.uno import Uno
 from cardgames.gofish import GoFish
 from cardgames.blackjack import BlackJack
 from cardgames.solitaire import Solitaire
@@ -35,6 +35,10 @@ guilds = discord.Object(id=989412607335227402)
 
 bot_start_time = datetime.now()
 guilds = discord.Object(id=989412607335227402)
+
+# Stores everyone's interaction for sending/editing messages
+    # i.e. {'mathidiot', {'interaction': <discord.Interaction> object}, 'view': <discord.ui.View> object}
+interaction_objects = {}
 
 @tree.command(name='help', description='A command for help on other commands!')
 async def _help(interaction):
@@ -198,21 +202,30 @@ async def _goFish(interaction, type: str):
 async def _solitaire(interaction):
     await interaction.response.send_message('WIP')
 
-@app_commands.describe(type       = 'The argument to choose.',
-                       number     = 'The corresponding position of card in your hand. 1 - 5',
-                       set_number = 'The set number to open packs. Sets (1 - 8)'
-)
+@app_commands.describe(type = 'The argument to choose.')
 @app_commands.choices(type = [
-    app_commands.Choice(name = 'Open a Pack. (Requires the Set_Number Option)',              value = 'open'),
-    app_commands.Choice(name = 'View Your Deck',                                             value = 'deck'),
-    app_commands.Choice(name = 'Create A Game',                                              value = 'create'),
-    app_commands.Choice(name = 'Start The Game',                                             value = 'start'),
-    app_commands.Choice(name = 'Select A Card',                                              value = 'choose'),
-    app_commands.Choice(name = '# Of Cards To Collect In Set. (Requires Set_Number Option)', value = 'collect'),
-    app_commands.Choice(name = '# Of Cards Collected In Set (Requires Set_Number Option)',   value = 'collected')
+    app_commands.Choice(name = 'Open a Pack',                   value = 'open'),
+    app_commands.Choice(name = 'View Your Deck',                value = 'deck'),
+    app_commands.Choice(name = 'Create A Game',                 value = 'create'),
+    app_commands.Choice(name = 'Start The Game',                value = 'start'),
+    app_commands.Choice(name = '# Of Cards To Collect In Set.', value = 'collect'),
+    app_commands.Choice(name = '# Of Cards Collected In Set',   value = 'collected')
 ])
 @tree.command(name="card-jitsu", description="Please Type '/info card-jitsu' for information on this game!")
-async def _cardJitsu(interaction, type: app_commands.Choice[str], number: Literal['1', '2', '3', '4', '5'] = None, set_number: Literal['1', '2', '3', '4', '5', '6', '7', '8'] = None):
+async def _cardJitsu(interaction, type: app_commands.Choice[str]):
+
+    def update_view(username, hand):
+        style = discord.ButtonStyle.gray
+        view = discord.ui.View(timeout=None)
+        
+        buttons = []
+        for card in range(len(hand)): buttons.append(discord.ui.Button(style=style, label=f'{card+1}', emoji=f'{hand[card]["card_image"]}'))
+
+        for button in buttons:
+            button.callback = get_function_callback(interaction_objects[username]['interaction'], int(button.label))
+            view.add_item(button)
+
+        interaction_objects[username]['view'] = view
 
     async def _update_window(username, turns_taken=0):
 
@@ -220,8 +233,6 @@ async def _cardJitsu(interaction, type: app_commands.Choice[str], number: Litera
         for num in range(len(players)):
 
             # Updates image for everyone with new data
-            channel = client.get_channel(players[num]['channel_id'])
-            hand_id = await channel.fetch_message(players[num]['hand_id'])
 
             hand = players[num]['hand']
             if players[num]['party_leader']:
@@ -262,7 +273,7 @@ async def _cardJitsu(interaction, type: app_commands.Choice[str], number: Litera
 
             # Names
             draw = ImageDraw.Draw(background)
-            font = ImageFont.truetype("/usr/share/fonts/truetype/freefont/FreeSansBold.ttf", 30, encoding='unic')
+            font = ImageFont.truetype("./fonts/FreeSansBold.ttf", 30, encoding='unic')
             draw.text((70, 555), players[0]['_id'].upper(), (0, 0, 0), font=font)
             draw.text((1050 - 20*(len(players[1]['_id']) - 1), 555), players[1]['_id'].upper(), (0, 0, 0), font=font)
 
@@ -276,8 +287,10 @@ async def _cardJitsu(interaction, type: app_commands.Choice[str], number: Litera
             # Editing the Embed
             embed = discord.Embed()
             embed.set_image(url=attachment.url)
-            await hand_id.edit(content='', embed=embed)
-            await temp_message.delete()
+
+            update_view(players[num]['_id'], hand)
+
+            await interaction_objects[players[num]['_id']]['interaction'].edit_original_response(content='', embed=embed, view=interaction_objects[players[num]['_id']]['view'])
 
     # Add a waiting message for players when something goes through
     # Reenable if i somehow fix the infinite defer problem
@@ -288,11 +301,28 @@ async def _cardJitsu(interaction, type: app_commands.Choice[str], number: Litera
     type = type.value
 
     # Opens a pack of cards and returns what they opened
-    if type == 'open':
-        if set_number != None:
-            cardsUnpacked = cardjitsuHandler.openPack(username, int(set_number))
-        else: cardsUnpacked = "Please Select a Pack Number!"
-        await interaction.followup.send(cardsUnpacked)
+    if type == 'open': 
+        
+        async def open_pack(interaction, set_number):
+            cardsUnpacked = cardjitsuHandler.openPack(interaction.user.name, int(set_number))
+            view = discord.ui.View()
+            await interaction.edit_original_response(content=cardsUnpacked, view=view)
+        
+        style = discord.ButtonStyle.blurple
+
+        buttons = []
+        for i in range(8):
+            buttons.append(discord.ui.Button(style=style, label=f'{i+1}'))
+        
+        def get_lambda(interaction, label):
+            return lambda _: open_pack(interaction, label)
+
+        view = discord.ui.View(timeout=None)
+        for button in buttons:
+            button.callback = get_lambda(interaction, button.label)
+            view.add_item(button)
+
+        await interaction.followup.send("Select A Series To Open", view=view)
 
     # Shows the user their collection of cards
     elif type == 'deck':
@@ -300,24 +330,78 @@ async def _cardJitsu(interaction, type: app_commands.Choice[str], number: Litera
         allCards = ''
 
         # Checks if they even have a deck
-        if cardsUnpacked != "Nothing Found!":
-            # Formats the print nicely
-            for i in range(len(cardsUnpacked)):
-                if len(allCards) + len(cardsUnpacked[i]['card_image']) >= 2000:
-                    await interaction.followup.send(allCards)
-                    allCards = ''
-                allCards += cardsUnpacked[i]['card_image']
-            if allCards != '': await interaction.followup.send(allCards)
-        else: await interaction.followup.send('Nothing Found!')
+        if cardsUnpacked == "Nothing Found!":
+            await interaction.followup.send('Nothing Found!')
+            return
+
+        # Formats the print nicely
+        for i in range(len(cardsUnpacked)):
+            if len(allCards) + len(cardsUnpacked[i]['card_image']) >= 2000:
+                await interaction.followup.send(allCards)
+                allCards = ''
+            allCards += cardsUnpacked[i]['card_image']
+        
+        await interaction.followup.send(allCards)
     
     # Creates a joinable server
     elif type == 'create':
         channel_id = interaction.channel_id
         started = cardjitsuHandler.createGame(interaction, username, channel_id)
+        if "Your Game Code" in started: interaction_objects[interaction.user.name] = {'interaction': interaction}
         await interaction.followup.send(started)
 
     elif type == 'start':
-        
+
+        async def choose_card(interaction, number):
+            
+            username = interaction.user.name
+            
+            # Might be able to choose multiple cards at once? // FIX
+            _, player, gameCollection = databasequery.player_lookup(username)
+
+            # channel = client.get_channel(player['channel_id'])
+
+            if player['turn_taken']: return
+
+            players = cardjitsuHandler.takeTurn(username, number)
+            
+            # Gets current data for player
+            for player in players:
+                if player['_id'] == username:
+                    break
+
+            turns_taken = 0
+            for player in players:
+                if player['turn_taken']:
+                    turns_taken += 1
+
+            # Updates pile once both players have taken their turn
+            if turns_taken == 2:
+
+                await _update_window(username, 2)
+
+                # Find the round winner and loser
+                winner, loser = cardjitsuHandler.winningCard(username)
+
+                # Finds if someone won the game as a whole
+                winner_found = cardjitsuHandler.overall_winner(username)
+
+                await _update_window(username)
+
+                for player in players:
+                    # channel = client.get_channel(player['channel_id'])
+
+                    # Overall winner found, game ends
+                    if winner_found:
+                        cardjitsuHandler.pay_players(winner, loser)
+                        _ = databasequery.abandonMatch(player['_id'], force=True)
+                        view = discord.ui.View()
+                        await interaction_objects[player['_id']]['interaction'].edit_original_response(content=f'{winner} won!', view=view)
+
+            else: await _update_window(username, 1)
+
+        def get_function_callback(interaction, number): return lambda _: choose_card(interaction, number)
+
         players, player, gameCollection = databasequery.player_lookup(username)
         
         if player == None:
@@ -329,16 +413,18 @@ async def _cardJitsu(interaction, type: app_commands.Choice[str], number: Litera
         if not player['party_leader']:
             await interaction.followup.send("You're not the party leader!")
             return
+
         if len(players) < 2:
             await interaction.followup.send("There are not enough players to play!")
-        
+            return
+
         # Enough players and It's the Party Leader    
         for player in players:
             cardjitsuHandler.dealHands(player, gameCollection)
 
         players, player, gameCollection = databasequery.player_lookup(username)
         for player in players:
-            channel = client.get_channel(player['channel_id'])
+            # channel = client.get_channel(player['channel_id'])
             hand = player['hand']
             
             # Creating the Visuals
@@ -368,109 +454,70 @@ async def _cardJitsu(interaction, type: app_commands.Choice[str], number: Litera
 
             embed = discord.Embed()
             embed.set_image(url=attachment.url)
-            message = await channel.send(embed=embed)
-            hand_id = message.id
-            await temp_message.delete()
 
-            message = await channel.send(content='Please pick a card!')
-            message_id = message.id
+            style = discord.ButtonStyle.gray
+            view = discord.ui.View(timeout=None)
+            
+            buttons = []
+            for card in range(len(hand)): buttons.append(discord.ui.Button(style=style, label=f'{card+1}', emoji=f'{hand[card]["card_image"]}'))
 
-            gameCollection.update_one({'_id': player['_id']}, {'$set': {'hand_id': hand_id}})
-            gameCollection.update_one({'_id': player['_id']}, {'$set': {'message_id': message_id}})
+            for button in buttons:
+                button.callback = get_function_callback(interaction_objects[player['_id']]['interaction'], int(button.label))
+                view.add_item(button)
 
-    elif type == 'choose':
+            interaction_objects[player['_id']]['view'] = view
+            await interaction_objects[player['_id']]['interaction'].edit_original_response(embed=embed, view=view)
+            # await temp_message.delete()
 
-        # Might be able to choose multiple cards at once? // FIX
-        _, player, gameCollection = databasequery.player_lookup(username)
-
-        if player == None:
-            await interaction.followup.send('You are not in a game!')
-            return
-
-        # Players hand is empty, game hasn't started
-        if player['hand'] == []:
-            await interaction.followup.send('The game has not started yet!')
-            return
-
-        number = int(number)
-
-        channel = client.get_channel(player['channel_id'])
-        if number < 1 or number > 5:
-            msg_channel = await channel.fetch_message(player['message_id'])
-            await msg_channel.edit(content="Please choose a number 1 - 5")
-            return
-
-        if player['turn_taken']:
-            msg_channel = await channel.fetch_message(player['message_id'])
-            await msg_channel.edit(content="You have already taken your turn. Please wait for your opponent to choose a card!")
-            return
-
-        players = cardjitsuHandler.takeTurn(username, number)
-        
-        # Gets current data for player
-        for player in players:
-            if player['_id'] == username:
-                break
-
-        turns_taken = 0
-        for player in players:
-
-            if player['turn_taken']:
-                turns_taken += 1
-
-        # Updates pile once both players have taken their turn
-        if turns_taken == 2:
-
-            await _update_window(username, 2)
-
-            # Find the round winner and loser
-            winner, loser = cardjitsuHandler.winningCard(username)
-
-            # Finds if someone won the game as a whole
-            winner_found = cardjitsuHandler.overall_winner(username)
-
-            await _update_window(username)
-
-            for player in players:
-                channel = client.get_channel(player['channel_id'])
-
-                # Overall winner found, game ends
-                if winner_found:
-                    cardjitsuHandler.pay_players(winner, loser)
-                    _ = databasequery.abandonMatch(username, force=True)
-                    msg_id = await channel.fetch_message(player['message_id'])
-                    await msg_id.delete()
-                    await channel.send(content=f'GAME FINISHED. {winner} won!')
-
-                # Just a round winner was declared
-                else:
-                    msg_id = await channel.fetch_message(player['message_id'])
-                    await msg_id.delete()
-                    if winner == loser:
-                        msg_id = await channel.send(content=f'Round tied! Choose your next card, {player["_id"]}')
-                    else:
-                        msg_id = await channel.send(content=f'{winner} won that round! Choose your next card, {player["_id"]}')
-                    msg_id = msg_id.id
-                    gameCollection.update_one({'_id': player['_id']}, {'$set': {'message_id': msg_id}})
-
-        else: await _update_window(username, 1)
+            await interaction_objects[player['_id']]['interaction'].followup.send('Please pick a card!')
 
     elif type == 'collect':
-        if set_number != None:
-            cardsToCollect = databasequery.collect(username, set_number, 'collect')
-            await interaction.followup.send(cardsToCollect)
-        else:
-            await interaction.followup.send('Please Select a Pack Number!')
+
+        async def to_collect(interaction, set_number):
+            cardsToCollect = databasequery.collect(interaction.user.name, set_number, 'collect')
+            view = discord.ui.View()
+            await interaction.edit_original_response(content=cardsToCollect, view=view)
+
+        style = discord.ButtonStyle.blurple
+
+        buttons = []
+        for i in range(8):
+            buttons.append(discord.ui.Button(style=style, label=f'{i+1}'))
+        
+        def get_lambda(interaction, label):
+            return lambda _: to_collect(interaction, label)
+
+        view = discord.ui.View(timeout=None)
+        for button in buttons:
+            button.callback = get_lambda(interaction, button.label)
+            view.add_item(button)
+
+        await interaction.followup.send('Please Select A Series', view=view)
 
     elif type == 'collected':
-        if set_number != None:
-            cardsCollected = databasequery.collect(username, set_number, 'collected')
-            await interaction.followup.send(cardsCollected)
-        else:
-            await interaction.followup.send('Please Select a Pack Number!')
-    
-    else:
-        await interaction.followup.send("Failed To Execute Command!")
+        
+        async def cards_collected(interaction, set_number):
+            cardsCollected = databasequery.collect(interaction.user.name, set_number, 'collected')
+            view = discord.ui.View()
+            await interaction.edit_original_response(content=cardsCollected, view=view)
+
+        style = discord.ButtonStyle.blurple
+
+        buttons = []
+        for i in range(8):
+            buttons.append(discord.ui.Button(style=style, label=f'{i+1}'))
+        
+        def get_lambda(interaction, label):
+            return lambda _: cards_collected(interaction, label)
+
+        view = discord.ui.View(timeout=None)
+        for button in buttons:
+            button.callback = get_lambda(interaction, button.label)
+            view.add_item(button)
+
+        await interaction.followup.send('Please Select A Series', view=view)
+
+    else: await interaction.followup.send("Failed To Execute Command!")
 
     if send_message:
         message = await interaction.followup.send('Boo')
@@ -482,11 +529,11 @@ async def _cardJitsu(interaction, type: app_commands.Choice[str], number: Litera
                        call_uno = 'Used if you are going to have one card after placement.'
 )
 @app_commands.choices(type = [
-    app_commands.Choice(name = 'Create A Game',                                         value = 'open'),
-    app_commands.Choice(name = 'Start The Game',                                        value = 'deck'),
-    app_commands.Choice(name = 'Choose A Card In Hand. (Requires The "Card" Option)',   value = 'create'),
-    app_commands.Choice(name = 'Draw A Card',                                           value = 'start'),
-    app_commands.Choice(name = 'Call Uno! (Used If Another Player Has Uno)',            value = 'choose')
+    app_commands.Choice(name = 'Create A Game',                                         value = 'create'),
+    app_commands.Choice(name = 'Start The Game',                                        value = 'start'),
+    app_commands.Choice(name = 'Choose A Card In Hand. (Requires The "Card" Option)',   value = 'choose'),
+    app_commands.Choice(name = 'Draw A Card',                                           value = 'draw'),
+    app_commands.Choice(name = 'Call Uno! (Used If Another Player Has Uno)',            value = 'call uno')
 ])
 @tree.command(name='uno', description='Play uno with your friends using this command!')
 async def _uno(interaction, type: Literal['create', 'start', 'choose', 'draw', 'call uno'], card: str = None, color: str = None, call_uno: Literal['Uno!'] = None):
@@ -850,8 +897,7 @@ async def _uno(interaction, type: Literal['create', 'start', 'choose', 'draw', '
         else:
             await interaction.followup.send('You\'re not in a game!')
     
-    else:
-        await interaction.followup.send("Please give a valid response!")
+    else: await interaction.followup.send("Please give a valid response!")
 
     if send_message:
         message = await interaction.followup.send('Boo')

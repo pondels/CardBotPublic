@@ -1,305 +1,305 @@
 [
-    {
-      "card_id": "1",
-      "element": "f",
-      "name": "CART SURFER",
-      "color": "b",
-      "value": "3",
-      "asset": "https://static.wikia.nocookie.net/clubpenguin/images/2/23/Card-Jitsu_Cards_full_1.png/revision/latest/scale-to-width-down/500",
-      "effect": null
-    },
-    {
-      "card_id": "3",
-      "element": "f",
-      "name": "ASTRO-BARRIER",
-      "color": "g",
-      "value": "8",
-      "asset": "https://static.wikia.nocookie.net/clubpenguin/images/a/a3/Card-Jitsu_Cards_full_3.png/revision/latest/scale-to-width-down/500",
-      "effect": null
-    },
-    {
-      "card_id": "6",
-      "element": "f",
-      "name": "PIZZA CHEF",
-      "color": "p",
-      "value": "6",
-      "asset": "https://static.wikia.nocookie.net/clubpenguin/images/4/42/Card-Jitsu_Cards_full_6.png/revision/latest/scale-to-width-down/500",
-      "effect": null
-    },
-    {
-      "card_id": "9",
-      "element": "f",
-      "name": "CONSTRUCTION WORKER",
-      "color": "y",
-      "value": "2",
-      "asset": "https://static.wikia.nocookie.net/clubpenguin/images/b/b4/Card-Jitsu_Cards_full_9.png/revision/latest/scale-to-width-down/500",
-      "effect": null
-    },
-    {
-      "card_id": "13",
-      "element": "s",
-      "name": "RESCUE SQUAD",
-      "color": "g",
-      "value": "5",
-      "asset": "https://static.wikia.nocookie.net/clubpenguin/images/d/d8/Card-Jitsu_Cards_full_13.png/revision/latest/scale-to-width-down/500",
-      "effect": null
-    },
-    {
-      "card_id": "14",
-      "element": "s",
-      "name": "PET SHOP",
-      "color": "o",
-      "value": "3",
-      "asset": "https://static.wikia.nocookie.net/clubpenguin/images/6/66/Card-Jitsu_Cards_full_14.png/revision/latest/scale-to-width-down/500",
-      "effect": null
-    },
-    {
-      "card_id": "15",
-      "element": "s",
-      "name": "SKI VILLAGE",
-      "color": "p",
-      "value": "4",
-      "asset": "https://static.wikia.nocookie.net/clubpenguin/images/a/a2/Card-Jitsu_Cards_full_15.png/revision/latest/scale-to-width-down/500",
-      "effect": null
-    },
-    {
-      "card_id": "17",
-      "element": "s",
-      "name": "SKI HILL",
-      "color": "r",
-      "value": "2",
-      "asset": "https://static.wikia.nocookie.net/clubpenguin/images/2/24/Card-Jitsu_Cards_full_17.png/revision/latest/scale-to-width-down/500",
-      "effect": null
-    },
-    {
-      "card_id": "18",
-      "element": "s",
-      "name": "SNOWBALL FIGHT",
-      "color": "r",
-      "value": "6",
-      "asset": "https://static.wikia.nocookie.net/clubpenguin/images/5/5d/Card-Jitsu_Cards_full_18.png/revision/latest/scale-to-width-down/500",
-      "effect": null
-    },
-    {
-      "card_id": "20",
-      "element": "s",
-      "name": "SOCCER",
-      "color": "y",
-      "value": "7",
-      "asset": "https://static.wikia.nocookie.net/clubpenguin/images/e/ed/Card-Jitsu_Cards_full_20.png/revision/latest/scale-to-width-down/500",
-      "effect": null
-    },
-    {
-      "card_id": "22",
-      "element": "w",
-      "name": "FOOTBALL",
-      "color": "b",
-      "value": "5",
-      "asset": "https://static.wikia.nocookie.net/clubpenguin/images/e/e5/Card-Jitsu_Cards_full_22.png/revision/latest/scale-to-width-down/500",
-      "effect": null
-    },
-    {
-      "card_id": "23",
-      "element": "w",
-      "name": "BASEBALL",
-      "color": "g",
-      "value": "2",
-      "asset": "https://static.wikia.nocookie.net/clubpenguin/images/b/b0/Card-Jitsu_Cards_full_23.png/revision/latest/scale-to-width-down/500",
-      "effect": null
-    },
-    {
-      "card_id": "26",
-      "element": "w",
-      "name": "MANHOLE COVER",
-      "color": "p",
-      "value": "4",
-      "asset": "https://static.wikia.nocookie.net/clubpenguin/images/f/f9/Card-Jitsu_Cards_full_26.png/revision/latest/scale-to-width-down/500",
-      "effect": null
-    },
-    {
-      "card_id": "29",
-      "element": "w",
-      "name": "SCUBA DIVING",
-      "color": "r",
-      "value": "7",
-      "asset": "https://static.wikia.nocookie.net/clubpenguin/images/8/82/Card-Jitsu_Cards_full_29.png/revision/latest/scale-to-width-down/500",
-      "effect": null
-    },
-    {
-      "card_id": "73",
-      "element": "f",
-      "name": "JACKHAMMER",
-      "color": "y",
-      "value": "10",
-      "asset": "https://static.wikia.nocookie.net/clubpenguin/images/4/44/Card-Jitsu_Cards_full_73.png/revision/latest/scale-to-width-down/500",
-      "effect": 1,
-      "effect_desc": "When this card is played, lower values win ties the next round."
-    },
-    {
-      "card_id": "81",
-      "element": "s",
-      "name": "SLED RACING",
-      "color": "g",
-      "value": "10",
-      "asset": "https://static.wikia.nocookie.net/clubpenguin/images/4/4d/Card-Jitsu_Cards_full_81.png/revision/latest/scale-to-width-down/500",
-      "effect": 1,
-      "effect_desc": "When this card is played, lower values win ties the next round."
-    },
-    {
-      "card_id": "89",
-      "element": "w",
-      "name": "FIREFIGHTER",
-      "color": "y",
-      "value": "10",
-      "asset": "https://static.wikia.nocookie.net/clubpenguin/images/8/8f/Card-Jitsu_Cards_full_89.png/revision/latest/scale-to-width-down/500",
-      "effect": 1,
-      "effect_desc": "When this card is played, lower values win ties the next round."
-    },
-    {
-      "card_id": "90",
-      "element": "w",
-      "name": "AQUA GRABBER",
-      "color": "o",
-      "value": "10",
-      "asset": "https://static.wikia.nocookie.net/clubpenguin/images/6/62/Card-Jitsu_Cards_full_90.png/revision/latest/scale-to-width-down/500",
-      "effect": 2,
-      "effect_desc": "When this is scored, discard one Opponent's Fire card."
-    },
-    {
-      "card_id": "202",
-      "element": "f",
-      "name": "Can of Worms",
-      "color": "b",
-      "value": "3",
-      "asset": "https://static.wikia.nocookie.net/clubpenguin/images/b/bf/Card-Jitsu_Cards_full_202.png/revision/latest/scale-to-width-down/500",
-      "effect": null
-    },
-    {
-      "card_id": "204",
-      "element": "f",
-      "name": "Invisible Ninja Suit",
-      "color": "o",
-      "value": "5",
-      "asset": "https://static.wikia.nocookie.net/clubpenguin/images/6/6d/Card-Jitsu_Cards_full_204.png/revision/latest/scale-to-width-down/500",
-      "effect": null
-    },
-    {
-      "card_id": "216",
-      "element": "w",
-      "name": "Beach Chair Chilling",
-      "color": "g",
-      "value": "3",
-      "asset": "https://static.wikia.nocookie.net/clubpenguin/images/2/2b/Card-Jitsu_Cards_full_216.png/revision/latest/scale-to-width-down/500",
-      "effect": null
-    },
-    {
-      "card_id": "218",
-      "element": "w",
-      "name": "Fish Costume",
-      "color": "y",
-      "value": "4",
-      "asset": "https://static.wikia.nocookie.net/clubpenguin/images/0/04/Card-Jitsu_Cards_full_218.png/revision/latest/scale-to-width-down/500",
-      "effect": null
-    },
-    {
-      "card_id": "220",
-      "element": "w",
-      "name": "The Cove",
-      "color": "b",
-      "value": "6",
-      "asset": "https://static.wikia.nocookie.net/clubpenguin/images/1/18/Card-Jitsu_Cards_full_220.png/revision/latest/scale-to-width-down/500",
-      "effect": null
-    },
-    {
-      "card_id": "222",
-      "element": "w",
-      "name": "Iceberg",
-      "color": "b",
-      "value": "8",
-      "asset": "https://static.wikia.nocookie.net/clubpenguin/images/c/cd/Card-Jitsu_Cards_full_222.png/revision/latest/scale-to-width-down/500",
-      "effect": null
-    },
-    {
-      "card_id": "229",
-      "element": "s",
-      "name": "Snowball Fight",
-      "color": "o",
-      "value": "3",
-      "asset": "https://static.wikia.nocookie.net/clubpenguin/images/4/45/Card-Jitsu_Cards_full_229.png/revision/latest/scale-to-width-down/500",
-      "effect": null
-    },
-    {
-      "card_id": "250",
-      "element": "f",
-      "name": "Dojo Sketch",
-      "color": "y",
-      "value": "10",
-      "asset": "https://static.wikia.nocookie.net/clubpenguin/images/a/a7/Card-Jitsu_Cards_full_250.png/revision/latest/scale-to-width-down/500",
-      "effect": 3,
-      "effect_desc": "When this is scored, Snow cannot be played next round."
-    },
-    {
-      "card_id": "303",
-      "element": "f",
-      "name": "Pizza Parlor",
-      "color": "r",
-      "value": "4",
-      "asset": "https://static.wikia.nocookie.net/clubpenguin/images/e/e6/Card-Jitsu_Cards_full_303.png/revision/latest/scale-to-width-down/500",
-      "effect": null
-    },
-    {
-      "card_id": "304",
-      "element": "f",
-      "name": "Coffee Machine",
-      "color": "o",
-      "value": "5",
-      "asset": "https://static.wikia.nocookie.net/clubpenguin/images/b/bf/Card-Jitsu_Cards_full_304.png/revision/latest/scale-to-width-down/500",
-      "effect": null
-    },
-    {
-      "card_id": "305",
-      "element": "f",
-      "name": "Costume Trunk",
-      "color": "r",
-      "value": "6",
-      "asset": "https://static.wikia.nocookie.net/clubpenguin/images/2/23/Card-Jitsu_Cards_full_305.png/revision/latest/scale-to-width-down/500",
-      "effect": null
-    },
-    {
-      "card_id": "312",
-      "element": "s",
-      "name": "Clock Tower",
-      "color": "g",
-      "value": "6",
-      "asset": "https://static.wikia.nocookie.net/clubpenguin/images/5/5f/Card-Jitsu_Cards_full_312.png/revision/latest/scale-to-width-down/500",
-      "effect": null
-    },
-    {
-      "card_id": "314",
-      "element": "s",
-      "name": "Dojo Courtyard",
-      "color": "g",
-      "value": "8",
-      "asset": "https://static.wikia.nocookie.net/clubpenguin/images/f/fc/Card-Jitsu_Cards_full_314.png/revision/latest/scale-to-width-down/500",
-      "effect": null
-    },
-    {
-      "card_id": "319",
-      "element": "w",
-      "name": "Beacon",
-      "color": "o",
-      "value": "5",
-      "asset": "https://static.wikia.nocookie.net/clubpenguin/images/2/2b/Card-Jitsu_Cards_full_319.png/revision/latest/scale-to-width-down/500",
-      "effect": null
-    },
-    {
-      "card_id": "352",
-      "element": "f",
-      "name": "Cloud Wave",
-      "color": "o",
-      "value": "12",
-      "asset": "https://static.wikia.nocookie.net/clubpenguin/images/0/06/Card-Jitsu_Cards_full_352.png/revision/latest/scale-to-width-down/500",
-      "effect": 4,
-      "effect_desc": "When this is scored, discard one Opponent's Green card."
-    }
-  ]
+  {
+    "card_id": "1",
+    "element": "f",
+    "name": "CART SURFER",
+    "color": "b",
+    "value": "3",
+    "asset": "https://static.wikia.nocookie.net/clubpenguin/images/2/23/Card-Jitsu_Cards_full_1.png/revision/latest/scale-to-width-down/500",
+    "effect": null
+  },
+  {
+    "card_id": "3",
+    "element": "f",
+    "name": "ASTRO-BARRIER",
+    "color": "g",
+    "value": "8",
+    "asset": "https://static.wikia.nocookie.net/clubpenguin/images/a/a3/Card-Jitsu_Cards_full_3.png/revision/latest/scale-to-width-down/500",
+    "effect": null
+  },
+  {
+    "card_id": "6",
+    "element": "f",
+    "name": "PIZZA CHEF",
+    "color": "p",
+    "value": "6",
+    "asset": "https://static.wikia.nocookie.net/clubpenguin/images/4/42/Card-Jitsu_Cards_full_6.png/revision/latest/scale-to-width-down/500",
+    "effect": null
+  },
+  {
+    "card_id": "9",
+    "element": "f",
+    "name": "CONSTRUCTION WORKER",
+    "color": "y",
+    "value": "2",
+    "asset": "https://static.wikia.nocookie.net/clubpenguin/images/b/b4/Card-Jitsu_Cards_full_9.png/revision/latest/scale-to-width-down/500",
+    "effect": null
+  },
+  {
+    "card_id": "13",
+    "element": "s",
+    "name": "RESCUE SQUAD",
+    "color": "g",
+    "value": "5",
+    "asset": "https://static.wikia.nocookie.net/clubpenguin/images/d/d8/Card-Jitsu_Cards_full_13.png/revision/latest/scale-to-width-down/500",
+    "effect": null
+  },
+  {
+    "card_id": "14",
+    "element": "s",
+    "name": "PET SHOP",
+    "color": "o",
+    "value": "3",
+    "asset": "https://static.wikia.nocookie.net/clubpenguin/images/6/66/Card-Jitsu_Cards_full_14.png/revision/latest/scale-to-width-down/500",
+    "effect": null
+  },
+  {
+    "card_id": "15",
+    "element": "s",
+    "name": "SKI VILLAGE",
+    "color": "p",
+    "value": "4",
+    "asset": "https://static.wikia.nocookie.net/clubpenguin/images/a/a2/Card-Jitsu_Cards_full_15.png/revision/latest/scale-to-width-down/500",
+    "effect": null
+  },
+  {
+    "card_id": "17",
+    "element": "s",
+    "name": "SKI HILL",
+    "color": "r",
+    "value": "2",
+    "asset": "https://static.wikia.nocookie.net/clubpenguin/images/2/24/Card-Jitsu_Cards_full_17.png/revision/latest/scale-to-width-down/500",
+    "effect": null
+  },
+  {
+    "card_id": "18",
+    "element": "s",
+    "name": "SNOWBALL FIGHT",
+    "color": "r",
+    "value": "6",
+    "asset": "https://static.wikia.nocookie.net/clubpenguin/images/5/5d/Card-Jitsu_Cards_full_18.png/revision/latest/scale-to-width-down/500",
+    "effect": null
+  },
+  {
+    "card_id": "20",
+    "element": "s",
+    "name": "SOCCER",
+    "color": "y",
+    "value": "7",
+    "asset": "https://static.wikia.nocookie.net/clubpenguin/images/e/ed/Card-Jitsu_Cards_full_20.png/revision/latest/scale-to-width-down/500",
+    "effect": null
+  },
+  {
+    "card_id": "22",
+    "element": "w",
+    "name": "FOOTBALL",
+    "color": "b",
+    "value": "5",
+    "asset": "https://static.wikia.nocookie.net/clubpenguin/images/e/e5/Card-Jitsu_Cards_full_22.png/revision/latest/scale-to-width-down/500",
+    "effect": null
+  },
+  {
+    "card_id": "23",
+    "element": "w",
+    "name": "BASEBALL",
+    "color": "g",
+    "value": "2",
+    "asset": "https://static.wikia.nocookie.net/clubpenguin/images/b/b0/Card-Jitsu_Cards_full_23.png/revision/latest/scale-to-width-down/500",
+    "effect": null
+  },
+  {
+    "card_id": "26",
+    "element": "w",
+    "name": "MANHOLE COVER",
+    "color": "p",
+    "value": "4",
+    "asset": "https://static.wikia.nocookie.net/clubpenguin/images/f/f9/Card-Jitsu_Cards_full_26.png/revision/latest/scale-to-width-down/500",
+    "effect": null
+  },
+  {
+    "card_id": "29",
+    "element": "w",
+    "name": "SCUBA DIVING",
+    "color": "r",
+    "value": "7",
+    "asset": "https://static.wikia.nocookie.net/clubpenguin/images/8/82/Card-Jitsu_Cards_full_29.png/revision/latest/scale-to-width-down/500",
+    "effect": null
+  },
+  {
+    "card_id": "73",
+    "element": "f",
+    "name": "JACKHAMMER",
+    "color": "y",
+    "value": "10",
+    "asset": "https://static.wikia.nocookie.net/clubpenguin/images/4/44/Card-Jitsu_Cards_full_73.png/revision/latest/scale-to-width-down/500",
+    "effect": 1,
+    "effect_desc": "When this card is played, lower values win ties the next round."
+  },
+  {
+    "card_id": "81",
+    "element": "s",
+    "name": "SLED RACING",
+    "color": "g",
+    "value": "10",
+    "asset": "https://static.wikia.nocookie.net/clubpenguin/images/4/4d/Card-Jitsu_Cards_full_81.png/revision/latest/scale-to-width-down/500",
+    "effect": 1,
+    "effect_desc": "When this card is played, lower values win ties the next round."
+  },
+  {
+    "card_id": "89",
+    "element": "w",
+    "name": "FIREFIGHTER",
+    "color": "y",
+    "value": "10",
+    "asset": "https://static.wikia.nocookie.net/clubpenguin/images/8/8f/Card-Jitsu_Cards_full_89.png/revision/latest/scale-to-width-down/500",
+    "effect": 1,
+    "effect_desc": "When this card is played, lower values win ties the next round."
+  },
+  {
+    "card_id": "90",
+    "element": "w",
+    "name": "AQUA GRABBER",
+    "color": "o",
+    "value": "10",
+    "asset": "https://static.wikia.nocookie.net/clubpenguin/images/6/62/Card-Jitsu_Cards_full_90.png/revision/latest/scale-to-width-down/500",
+    "effect": 2,
+    "effect_desc": "When this is scored, discard one Opponent's Fire card."
+  },
+  {
+    "card_id": "202",
+    "element": "f",
+    "name": "Can of Worms",
+    "color": "b",
+    "value": "3",
+    "asset": "https://static.wikia.nocookie.net/clubpenguin/images/b/bf/Card-Jitsu_Cards_full_202.png/revision/latest/scale-to-width-down/500",
+    "effect": null
+  },
+  {
+    "card_id": "204",
+    "element": "f",
+    "name": "Invisible Ninja Suit",
+    "color": "o",
+    "value": "5",
+    "asset": "https://static.wikia.nocookie.net/clubpenguin/images/6/6d/Card-Jitsu_Cards_full_204.png/revision/latest/scale-to-width-down/500",
+    "effect": null
+  },
+  {
+    "card_id": "216",
+    "element": "w",
+    "name": "Beach Chair Chilling",
+    "color": "g",
+    "value": "3",
+    "asset": "https://static.wikia.nocookie.net/clubpenguin/images/2/2b/Card-Jitsu_Cards_full_216.png/revision/latest/scale-to-width-down/500",
+    "effect": null
+  },
+  {
+    "card_id": "218",
+    "element": "w",
+    "name": "Fish Costume",
+    "color": "y",
+    "value": "4",
+    "asset": "https://static.wikia.nocookie.net/clubpenguin/images/0/04/Card-Jitsu_Cards_full_218.png/revision/latest/scale-to-width-down/500",
+    "effect": null
+  },
+  {
+    "card_id": "220",
+    "element": "w",
+    "name": "The Cove",
+    "color": "b",
+    "value": "6",
+    "asset": "https://static.wikia.nocookie.net/clubpenguin/images/1/18/Card-Jitsu_Cards_full_220.png/revision/latest/scale-to-width-down/500",
+    "effect": null
+  },
+  {
+    "card_id": "222",
+    "element": "w",
+    "name": "Iceberg",
+    "color": "b",
+    "value": "8",
+    "asset": "https://static.wikia.nocookie.net/clubpenguin/images/c/cd/Card-Jitsu_Cards_full_222.png/revision/latest/scale-to-width-down/500",
+    "effect": null
+  },
+  {
+    "card_id": "229",
+    "element": "s",
+    "name": "Snowball Fight",
+    "color": "o",
+    "value": "3",
+    "asset": "https://static.wikia.nocookie.net/clubpenguin/images/4/45/Card-Jitsu_Cards_full_229.png/revision/latest/scale-to-width-down/500",
+    "effect": null
+  },
+  {
+    "card_id": "250",
+    "element": "f",
+    "name": "Dojo Sketch",
+    "color": "y",
+    "value": "10",
+    "asset": "https://static.wikia.nocookie.net/clubpenguin/images/a/a7/Card-Jitsu_Cards_full_250.png/revision/latest/scale-to-width-down/500",
+    "effect": 3,
+    "effect_desc": "When this is scored, Snow cannot be played next round."
+  },
+  {
+    "card_id": "303",
+    "element": "f",
+    "name": "Pizza Parlor",
+    "color": "r",
+    "value": "4",
+    "asset": "https://static.wikia.nocookie.net/clubpenguin/images/e/e6/Card-Jitsu_Cards_full_303.png/revision/latest/scale-to-width-down/500",
+    "effect": null
+  },
+  {
+    "card_id": "304",
+    "element": "f",
+    "name": "Coffee Machine",
+    "color": "o",
+    "value": "5",
+    "asset": "https://static.wikia.nocookie.net/clubpenguin/images/b/bf/Card-Jitsu_Cards_full_304.png/revision/latest/scale-to-width-down/500",
+    "effect": null
+  },
+  {
+    "card_id": "305",
+    "element": "f",
+    "name": "Costume Trunk",
+    "color": "r",
+    "value": "6",
+    "asset": "https://static.wikia.nocookie.net/clubpenguin/images/2/23/Card-Jitsu_Cards_full_305.png/revision/latest/scale-to-width-down/500",
+    "effect": null
+  },
+  {
+    "card_id": "312",
+    "element": "s",
+    "name": "Clock Tower",
+    "color": "g",
+    "value": "6",
+    "asset": "https://static.wikia.nocookie.net/clubpenguin/images/5/5f/Card-Jitsu_Cards_full_312.png/revision/latest/scale-to-width-down/500",
+    "effect": null
+  },
+  {
+    "card_id": "314",
+    "element": "s",
+    "name": "Dojo Courtyard",
+    "color": "g",
+    "value": "8",
+    "asset": "https://static.wikia.nocookie.net/clubpenguin/images/f/fc/Card-Jitsu_Cards_full_314.png/revision/latest/scale-to-width-down/500",
+    "effect": null
+  },
+  {
+    "card_id": "319",
+    "element": "w",
+    "name": "Beacon",
+    "color": "o",
+    "value": "5",
+    "asset": "https://static.wikia.nocookie.net/clubpenguin/images/2/2b/Card-Jitsu_Cards_full_319.png/revision/latest/scale-to-width-down/500",
+    "effect": null
+  },
+  {
+    "card_id": "352",
+    "element": "f",
+    "name": "Cloud Wave",
+    "color": "o",
+    "value": "12",
+    "asset": "https://static.wikia.nocookie.net/clubpenguin/images/0/06/Card-Jitsu_Cards_full_352.png/revision/latest/scale-to-width-down/500",
+    "effect": 4,
+    "effect_desc": "When this is scored, discard one Opponent's Green card."
+  }
+]

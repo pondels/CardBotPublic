@@ -1,19 +1,16 @@
-from PIL import Image, ImageDraw, ImageFont
-import os
-import discord
+cards = 220
+views = {f'view {i+1}': [] for i in range((cards / 21).__ceil__())}
 
-background = Image.open('./images/blue_control.png')
+for view in range(len(views)):
+    if len(views) == 1: break
+    
+    # First view in array
+    if len(views) - view - 1 == 0: views[f'view {len(views) - view}'] = ['Next Page']
+    
+    # Last view in array
+    elif len(views) - view - 1 == len(views) - 1: views[f'view {len(views) - view}'] = ['Prev Page']
+    
+    # Any other view in array
+    else: views[f'view {len(views) - view}'] = ['Prev Page', 'Next Page']
 
-player1 = 'MATHIDIOT'
-player2 = 'STABLECK'
-
-# card_played = Image.open('./images/colorElements/Card-Jitsu_card_back.png')
-draw = ImageDraw.Draw(background)
-font = ImageFont.truetype("/usr/share/fonts/truetype/freefont/FreeSansBold.ttf", 30, encoding='unic')
-draw.text((70, 555), player1, (0, 0, 0), font=font)
-draw.text((1050 - 20*(len(player2) - 1), 555), player2, (0, 0, 0), font=font)
-background.save('./images/VERSUS_CP.png')
-
-# card_played = Image.open('./images/colorElements/Card-Jitsu_card_back.png')
-# card_played.thumbnail((170, 170), Image.ANTIALIAS)
-# background.paste(card_played, (660, 215), card_played)
+print(views)
